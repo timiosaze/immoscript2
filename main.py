@@ -43,7 +43,7 @@ def getAllZurichRentProperties():
 
         # url = 'https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100'
        
-        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'})
+        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
 
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
@@ -67,7 +67,7 @@ def getAllZurichBuyProperties():
 
         # url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
        
-        r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'})
+        r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
         print(r.status)
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
@@ -97,7 +97,7 @@ def getData(section, state, props):
         http = urllib3.PoolManager(ca_certs=certifi.where())
 
         if(new_id.startswith('https')):
-            r = http.request('GET',new_id,headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}, timeout=2.5)
+            r = http.request('GET',new_id,headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}, timeout=2.5)
         else:
             r = http.request('GET', 'https://www.immoscout24.ch' + new_id + '',headers={'User-Agent': ua.chrome}, timeout=2.5)
        
