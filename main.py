@@ -47,6 +47,7 @@ def getAllZurichRentProperties():
 
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
+            print(a)
             href = a['href']
             inc()
             status("gotten list " + str(count) + ": " + href)
