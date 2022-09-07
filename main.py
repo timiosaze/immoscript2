@@ -41,9 +41,9 @@ def getAllZurichRentProperties():
         time.sleep(1)
         http = urllib3.PoolManager(ca_certs=certifi.where())
 
-        url = 'https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100'
+        # url = 'https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100'
        
-        r = http.request('GET', url,headers={'User-Agent': ua.chrome})
+        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100',headers={'User-Agent': ua.chrome})
 
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
@@ -64,9 +64,9 @@ def getAllZurichBuyProperties():
         time.sleep(1)
         http = urllib3.PoolManager(ca_certs=certifi.where())
 
-        url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
+        # url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
        
-        r = http.request('GET', url,headers={'User-Agent': ua.chrome})
+        r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100',headers={'User-Agent': ua.chrome})
 
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
