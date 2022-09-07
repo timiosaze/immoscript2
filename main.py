@@ -19,7 +19,7 @@ from deep_translator import (GoogleTranslator,
                              batch_detection)
 ua = UserAgent()
 #MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
@@ -52,7 +52,7 @@ def getAllZurichRentProperties():
             inc()
             status("gotten list " + str(count) + ": " + href)
             ids.append(href)
-        status("appended page " + str(page))
+        status("appended page " + str(x))
     return ids
 
 def getAllZurichBuyProperties():
@@ -68,7 +68,7 @@ def getAllZurichBuyProperties():
         # url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
        
         r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(x) + '&r=100',headers={'User-Agent': ua.chrome})
-
+        print(r.status)
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
             href = a['href']
@@ -77,7 +77,7 @@ def getAllZurichBuyProperties():
             ids.append(href)
 
         
-        status("appended page " + str(page))
+        status("appended page " + str(x))
     return ids
 
 def getTimeRange():
