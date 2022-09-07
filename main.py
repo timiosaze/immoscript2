@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import time
-import csv
-import re
+import certifi
 import urllib3
 from urllib.request import Request, urlopen
 import mysql.connector
@@ -20,7 +19,7 @@ from deep_translator import (GoogleTranslator,
                              batch_detection)
 ua = UserAgent()
 #MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
@@ -40,7 +39,7 @@ def getAllZurichRentProperties():
     two = page[1]
     for page in range(one, two):    
         time.sleep(1)
-        http = urllib3.PoolManager()
+        http = urllib3.PoolManager(ca_certs=certifi.where())
 
         url = 'https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100'
        
@@ -52,8 +51,6 @@ def getAllZurichRentProperties():
             inc()
             status("gotten list " + str(count) + ": " + href)
             ids.append(href)
-
-        
         status("appended page " + str(page))
     return ids
 
@@ -65,7 +62,7 @@ def getAllZurichBuyProperties():
     two = page[1]
     for page in range(one, two):    
         time.sleep(1)
-        http = urllib3.PoolManager()
+        http = urllib3.PoolManager(ca_certs=certifi.where())
 
         url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
        
@@ -96,7 +93,7 @@ def getData(section, state, props):
     for id in ids:
         start = time.time()
         new_id = str(id)
-        http = urllib3.PoolManager()
+        http = urllib3.PoolManager(ca_certs=certifi.where())
 
         if(new_id.startswith('https')):
             r = http.request('GET',new_id,headers={'User-Agent': ua.chrome}, timeout=2.5)
@@ -137,8 +134,7 @@ def getData(section, state, props):
             nom2 = number['alt']
            
         else:
-            print("section = ", section)
-            print("state = ", state)
+           
             street =""
             try:
                 street = soup.find("p", attrs={'class':'Box-cYFBPY fJcIoQ'}).text
@@ -182,7 +178,6 @@ def getData(section, state, props):
                 nom2 = ""
             price = soup.find('h2',attrs = {'class':'Box-cYFBPY JEfxu'}).text
 
-        print(description)   
         vals = (new_id,)
         cursor.execute('SELECT propertylink FROM properties WHERE propertylink = %s', vals)
         cnx.commit()
