@@ -44,9 +44,9 @@ def getAllZurichRentProperties():
         http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
         
        
-        r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
+        r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
         print(r.status)
-        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
+        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
         print(r.status)
         # https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
@@ -72,7 +72,7 @@ def getAllZurichBuyProperties():
 
         # url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
        
-        r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
+        r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
         print(r.status)
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
