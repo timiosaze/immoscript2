@@ -2,8 +2,8 @@ from bs4 import BeautifulSoup
 import time
 import certifi
 import urllib3
-# import socket
-# import socks
+import requests
+from urllib3 import ProxyManager, make_headers
 from urllib.request import Request, urlopen
 import mysql.connector
 from urllib.parse import urlparse
@@ -42,12 +42,16 @@ def getAllZurichRentProperties():
     for x in range(one, two):    
         time.sleep(1)
         http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-        
+        # default_headers = make_headers(proxy_basic_auth='user:password')
+        # http = ProxyManager("http://105.112.182.61:8080")
+        # http = urllib3.ProxyManager('http://165.154.225.65/',cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
+
        
         r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
         print(r.status)
-        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
-        print(r.status)
+        page = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich', headers={'User-Agent': ua.chrome})
+       
+        print(page.status_code)
         # https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich
         soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         
