@@ -43,6 +43,9 @@ def getAllZurichRentProperties():
         
         r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
         print(r.status)
+        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
+        print(r.status)
+        # https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich
     #     soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
     #     for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
     #         print(a)
