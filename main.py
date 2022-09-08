@@ -18,7 +18,7 @@ from deep_translator import (GoogleTranslator,
                              single_detection,
                              batch_detection)
 ua = UserAgent()
-#MYSQL CONNECTION PARAMS
+# MYSQL CONNECTION PARAMS
 cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
@@ -40,20 +40,18 @@ def getAllZurichRentProperties():
     for x in range(one, two):    
         time.sleep(1)
         http = urllib3.PoolManager(ca_certs=certifi.where())
-
-        # url = 'https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100'
-       
-        r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
-
-        soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
-        for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
-            print(a)
-            href = a['href']
-            inc()
-            status("gotten list " + str(count) + ": " + href)
-            ids.append(href)
-        status("appended page " + str(x))
-    return ids
+        
+        r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
+        print(r.status)
+    #     soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
+    #     for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
+    #         print(a)
+    #         href = a['href']
+    #         inc()
+    #         status("gotten list " + str(count) + ": " + href)
+    #         ids.append(href)
+    #     status("appended page " + str(x))
+    # return ids
 
 def getAllZurichBuyProperties():
     ids = []
@@ -201,8 +199,10 @@ def getData(section, state, props):
 print(getTimeRange())
 
 start = time.time()
-getData("Buy", "Zurich", getAllZurichBuyProperties())
-getData("Rent", "Zurich", getAllZurichRentProperties())
+getAllZurichRentProperties()
+# getData("Rent", "Zurich", getAllZurichRentProperties())
+# getData("Buy", "Zurich", getAllZurichBuyProperties())
+
 cursor.close()
 end = time.time()
 
