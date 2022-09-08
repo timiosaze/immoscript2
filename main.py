@@ -47,13 +47,16 @@ def getAllZurichRentProperties():
         # http = urllib3.ProxyManager('http://165.154.225.65/',cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
 
        
-        r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
-        print(r.status)
-        page = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich', headers={'User-Agent': ua.chrome})
+        # r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
+        # print(r.status)
+
+        for id in range(30):
+            page = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich', headers={'User-Agent': ua.chrome})
+        
+            print(id, ":  ", page.status_code)
        
-        print(page.status_code)
         # https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich
-        soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
+        # soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
         
     #     for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
     #         print(a)
