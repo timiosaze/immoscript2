@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import time
 import certifi
 import urllib3
+# import socket
+# import socks
 from urllib.request import Request, urlopen
 import mysql.connector
 from urllib.parse import urlparse
@@ -39,14 +41,16 @@ def getAllZurichRentProperties():
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
-        http = urllib3.PoolManager(ca_certs=certifi.where())
+        http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
         
+       
         r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
         print(r.status)
         r = http.request('GET','https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich',headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'})
         print(r.status)
         # https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich
-    #     soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
+        soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
+        
     #     for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
     #         print(a)
     #         href = a['href']
