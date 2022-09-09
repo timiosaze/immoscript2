@@ -30,14 +30,14 @@ ua = UserAgent()
 chrome_ua = ua.chrome
 
 # MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
 
 session = requests.Session()
-session.mount("https://", HTTPAdapter(max_retries=5))
-session.mount("http://", HTTPAdapter(max_retries=5))
+session.mount("https://", HTTPAdapter(max_retries=8))
+session.mount("http://", HTTPAdapter(max_retries=8))
 count = 0
 def status(str):
     print(str)
@@ -298,11 +298,11 @@ for x in range(3):
     with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(extract, proxylist)
 proxies = [*set(good_proxies)]
-proxy = random.choice(proxies)
-print("chosen proxy ", proxy)
+# proxy = random.choice(proxies)
+# print("chosen proxy ", proxy)
 print(len(proxies), " are working well")
-getData("Rent", "Zurich",getAllZurichRentProperties(proxy), proxy)
-getData("Buy", "Zurich",getAllZurichBuyProperties(proxy), proxy)
+getData("Rent", "Zurich",getAllZurichRentProperties(random.choice(proxies)), random.choice(proxies))
+getData("Buy", "Zurich",getAllZurichBuyProperties(random.choice(proxies)), random.choice(proxies))
 
 cursor.close()
 
