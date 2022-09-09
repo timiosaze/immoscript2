@@ -11,6 +11,10 @@ from urllib.parse import urlparse
 from fake_useragent import UserAgent
 import random
 import concurrent.futures
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+
 from deep_translator import (GoogleTranslator,
                              MicrosoftTranslator,
                              PonsTranslator,
@@ -106,7 +110,7 @@ def getAllZurichRentProperties(proxy):
         time.sleep(1)
         while True:
             try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2,Verify=False)
                 break
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
@@ -133,7 +137,7 @@ def getAllZurichBuyProperties(proxy):
         time.sleep(1)
         while True:
             try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy}, timeout=2)
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy}, timeout=2,Verify=False)
                 break
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
@@ -165,9 +169,9 @@ def getData(section, state, props, proxy):
         while True:
             try:
                 if(new_id.startswith('https')):
-                    response = requests.get(new_id, headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+                    response = requests.get(new_id, headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2,Verify=False)
                 else:
-                    response = requests.get('https://www.immoscout24.ch' + new_id + '', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+                    response = requests.get('https://www.immoscout24.ch' + new_id + '', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2,Verify=False)
                 break
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
