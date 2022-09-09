@@ -107,14 +107,14 @@ def getAllZurichRentProperties(proxy):
     one = page[0]
     two = page[1]
     for x in range(one, two):    
-        time.sleep(1)
+        time.sleep(3)
         proxies = {
                     'http' :proxy,
                     'https':proxy
                     }
         while True:
             try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua},  proxies=proxies,timeout=2)
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua},  proxies=proxies,timeout=3)
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
     
@@ -137,14 +137,14 @@ def getAllZurichBuyProperties(proxy):
     one = page[0]
     two = page[1]
     for x in range(one, two):    
-        time.sleep(1)
+        time.sleep(3)
         proxies = {
                     'http' :proxy,
                     'https':proxy
                     }
         while True:
             try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=2)
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=3)
                 break
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
