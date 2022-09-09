@@ -30,10 +30,14 @@ ua = UserAgent()
 chrome_ua = ua.chrome
 
 # MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
+
+session = requests.Session()
+session.mount("https://", HTTPAdapter(max_retries=5))
+session.mount("http://", HTTPAdapter(max_retries=5))
 count = 0
 def status(str):
     print(str)
@@ -112,12 +116,12 @@ def getAllZurichRentProperties(proxy):
                     'http' :proxy,
                     'https':proxy
                     }
-        while True:
-            try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua},  proxies=proxies,timeout=3)
-            except requests.exceptions.Timeout:
-                print("Timeout error, Retrying ...")
-    
+        headers={'User-Agent': chrome_ua}
+       
+        session.proxies.update(proxies)
+        session.headers.update(headers)
+        response = session.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100')
+           
        
         soup = BeautifulSoup(response.text, "lxml")
         
@@ -142,12 +146,11 @@ def getAllZurichBuyProperties(proxy):
                     'http' :proxy,
                     'https':proxy
                     }
-        while True:
-            try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=3)
-                break
-            except requests.exceptions.Timeout:
-                print("Timeout error, Retrying ...")
+        headers={'User-Agent': chrome_ua}
+        session.proxies.update(proxies)
+        session.headers.update(headers)
+        response = session.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100')
+    
 
         soup = BeautifulSoup(response.text, "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
@@ -177,15 +180,15 @@ def getData(section, state, props, proxy):
                     'http' :proxy,
                     'https':proxy,
                     }
-        while True:
-            try:
-                if(new_id.startswith('https')):
-                    response = requests.get(new_id, headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=2)
-                else:
-                    response = requests.get('https://www.immoscout24.ch' + new_id + '', headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=2)
-                break
-            except requests.exceptions.Timeout:
-                print("Timeout error, Retrying ...")
+        headers={'User-Agent': chrome_ua}
+        session.proxies.update(proxies)
+        session.headers.update(headers)
+        if(new_id.startswith('https')):
+            
+            response = session.get(new_id)
+        else:
+            response = session.get('https://www.immoscout24.ch' + new_id + '')
+      
        
         soup = BeautifulSoup(response.text, "lxml")
         keys = list()
