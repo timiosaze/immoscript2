@@ -1,3 +1,4 @@
+from urllib import response
 from bs4 import BeautifulSoup
 import time
 import certifi
@@ -8,6 +9,8 @@ from urllib.request import Request, urlopen
 import mysql.connector
 from urllib.parse import urlparse
 from fake_useragent import UserAgent
+import random
+import concurrent.futures
 from deep_translator import (GoogleTranslator,
                              MicrosoftTranslator,
                              PonsTranslator,
@@ -20,8 +23,10 @@ from deep_translator import (GoogleTranslator,
                              single_detection,
                              batch_detection)
 ua = UserAgent()
+chrome_ua = ua.chrome
+
 # MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
@@ -33,7 +38,65 @@ def inc():
     global count 
     count += 1
 
-def getAllZurichRentProperties():
+
+good_proxies = []
+
+def clear_txt():
+    f = open('good.txt', 'r+')
+    f.truncate(0) # need '0' when using r+
+    f = open('good2.txt', 'r+')
+    f.truncate(0) # need '0' when using r+
+
+def proxies_list():
+    headers={'User-Agent': chrome_ua}
+    response = requests.get('https://raw.githubusercontent.com/UptimerBot/proxy-list/main/proxies/http.txt', headers=headers)
+    with open("response.txt", "w") as f:
+        f.write(response.text)
+        f.close()
+
+def proxies_arr():
+    proxies_arr = []
+    with open('response.txt', 'r') as reader:
+        for line in reader.readlines():
+            # print(line, end='')
+            proxies_arr.append(line.strip())
+    return proxies_arr
+
+#get the list of free proxies
+def getProxies():
+    r = requests.get('https://free-proxy-list.net/')
+    soup = BeautifulSoup(r.content, 'html.parser')
+    table = soup.find('tbody')
+    proxies = []
+    for row in table:
+        if row.find_all('td')[4].text =='elite proxy':
+            proxy = ':'.join([row.find_all('td')[0].text, row.find_all('td')[1].text])
+            proxies.append(proxy)
+        else:
+            pass
+    return proxies
+
+def extract(proxy):
+   
+   
+    headers={'User-Agent': chrome_ua}
+   
+    r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' : proxy, 'https' : proxy}, timeout=1)
+    if(r.status_code == 200):
+        print(proxy, " is working ", r.status_code)
+        with open("good2.txt", "a") as myfile:
+            myfile.write(proxy)
+            myfile.write('\n')
+            myfile.close()
+        good_proxies.append(proxy)
+    return proxy
+
+
+
+
+
+def getAllZurichRentProperties(proxy):
+    status("GETTING RENT PROPERTIES....")
     ids = []
     page = []
     page = getTimeRange()
@@ -41,33 +104,21 @@ def getAllZurichRentProperties():
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
-        http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-        # default_headers = make_headers(proxy_basic_auth='user:password')
-        # http = ProxyManager("http://105.112.182.61:8080")
-        # http = urllib3.ProxyManager('http://165.154.225.65/',cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
-
+        response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+    
        
-        # r = http.request('GET','https://www.immoscout24.ch/de',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
-        # print(r.status)
-
-        for id in range(30):
-            page = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich', headers={'User-Agent': ua.chrome})
+        soup = BeautifulSoup(response.text, "lxml")
         
-            print(id, ":  ", page.status_code)
-       
-        # https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich
-        # soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
-        
-    #     for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
-    #         print(a)
-    #         href = a['href']
-    #         inc()
-    #         status("gotten list " + str(count) + ": " + href)
-    #         ids.append(href)
-    #     status("appended page " + str(x))
-    # return ids
+        for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
+            href = a['href']
+            inc()
+            status("gotten list " + str(count) + ": " + href)
+            ids.append(href)
+        status("appended page " + str(x))
+    return ids
 
-def getAllZurichBuyProperties():
+def getAllZurichBuyProperties(proxy):
+    status("GETTING BUY PROPERTIES....")
     ids = []
     page = []
     page = getTimeRange()
@@ -75,20 +126,15 @@ def getAllZurichBuyProperties():
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
-        http = urllib3.PoolManager(ca_certs=certifi.where())
 
-        # url = 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100'
-       
-        r = http.request('GET', 'https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(x) + '&r=100',headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
-        print(r.status)
-        soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
+        response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy}, timeout=2)
+        soup = BeautifulSoup(response.text, "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
             href = a['href']
             inc()
             status("gotten list " + str(count) + ": " + href)
             ids.append(href)
 
-        
         status("appended page " + str(x))
     return ids
 
@@ -100,20 +146,23 @@ def getTimeRange():
     return arr
 
 
-def getData(section, state, props):
+def getData(section, state, props, proxy):
     ids = props
-    status("GETTING ALL DATA FOR SWITZERLAND RENT PROPERTIES USING THEIR UNIQUE IDS....")
+    status("GETTING ALL DATA FOR ZURICH USING THEIR UNIQUE IDS....")
     for id in ids:
         start = time.time()
         new_id = str(id)
-        http = urllib3.PoolManager(ca_certs=certifi.where())
-
-        if(new_id.startswith('https')):
-            r = http.request('GET',new_id,headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36'}, timeout=2.5)
-        else:
-            r = http.request('GET', 'https://www.immoscout24.ch' + new_id + '',headers={'User-Agent': ua.chrome}, timeout=2.5)
+        while True:
+            try:
+                if(new_id.startswith('https')):
+                    response = requests.get(new_id, headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+                else:
+                    response = requests.get('https://www.immoscout24.ch' + new_id + '', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+                break
+            except requests.exceptions.Timeout:
+                print("Timeout error, Retrying ...")
        
-        soup = BeautifulSoup(r.data.decode('utf-8'), "lxml")
+        soup = BeautifulSoup(response.text, "lxml")
         keys = list()
         vals = list()
         if(new_id.startswith('https')):
@@ -211,13 +260,24 @@ def getData(section, state, props):
 
 
 print(getTimeRange())
-
+# print(save_proxies)
 start = time.time()
-getAllZurichRentProperties()
-# getData("Rent", "Zurich", getAllZurichRentProperties())
-# getData("Buy", "Zurich", getAllZurichBuyProperties())
+
+clear_txt()
+for x in range(3):
+    proxies_list()
+    proxylist = proxies_arr()
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(extract, proxylist)
+proxies = [*set(good_proxies)]
+proxy = random.choice(proxies)
+print("chosen proxy ", proxy)
+print(len(proxies), " are working well")
+getData("Rent", "Zurich",getAllZurichRentProperties(proxy), proxy)
+getData("Buy", "Zurich",getAllZurichBuyProperties(proxy), proxy)
 
 cursor.close()
+
 end = time.time()
 
 print(end - start)
