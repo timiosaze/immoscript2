@@ -30,7 +30,7 @@ ua = UserAgent()
 chrome_ua = ua.chrome
 
 # MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
@@ -85,7 +85,7 @@ def extract(proxy):
    
     headers={'User-Agent': chrome_ua}
    
-    r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' : proxy, 'https' : proxy}, timeout=1)
+    r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' :proxy,'https': proxy},timeout=2)
     if(r.status_code == 200):
         print(proxy, " is working ", r.status_code)
         with open("good2.txt", "a") as myfile:
@@ -108,10 +108,13 @@ def getAllZurichRentProperties(proxy):
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
+        proxies = {
+                    'http' :proxy,
+                    'https':proxy
+                    }
         while True:
             try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2,Verify=False)
-                break
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua},  proxies=proxies,timeout=2)
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
     
@@ -135,9 +138,13 @@ def getAllZurichBuyProperties(proxy):
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
+        proxies = {
+                    'http' :proxy,
+                    'https':proxy
+                    }
         while True:
             try:
-                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy}, timeout=2,Verify=False)
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=2)
                 break
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
@@ -166,12 +173,16 @@ def getData(section, state, props, proxy):
     for id in ids:
         start = time.time()
         new_id = str(id)
+        proxies = {
+                    'http' :proxy,
+                    'https':proxy,
+                    }
         while True:
             try:
                 if(new_id.startswith('https')):
-                    response = requests.get(new_id, headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2,Verify=False)
+                    response = requests.get(new_id, headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=2)
                 else:
-                    response = requests.get('https://www.immoscout24.ch' + new_id + '', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2,Verify=False)
+                    response = requests.get('https://www.immoscout24.ch' + new_id + '', headers={'User-Agent': chrome_ua}, proxies=proxies,timeout=2)
                 break
             except requests.exceptions.Timeout:
                 print("Timeout error, Retrying ...")
