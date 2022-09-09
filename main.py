@@ -104,7 +104,12 @@ def getAllZurichRentProperties(proxy):
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
-        response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+        while True:
+            try:
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy},timeout=2)
+                break
+            except requests.exceptions.Timeout:
+                print("Timeout error, Retrying ...")
     
        
         soup = BeautifulSoup(response.text, "lxml")
@@ -126,8 +131,13 @@ def getAllZurichBuyProperties(proxy):
     two = page[1]
     for x in range(one, two):    
         time.sleep(1)
+        while True:
+            try:
+                response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy}, timeout=2)
+                break
+            except requests.exceptions.Timeout:
+                print("Timeout error, Retrying ...")
 
-        response = requests.get('https://www.immoscout24.ch/de/immobilien/kaufen/ort-zuerich?pn=' + str(page) + '&r=100', headers={'User-Agent': chrome_ua}, proxies={'http' : proxy,'https': proxy}, timeout=2)
         soup = BeautifulSoup(response.text, "lxml")
         for a in soup.find_all('a',attrs = {'class':'Wrapper__A-kVOWTT'}):
             href = a['href']
