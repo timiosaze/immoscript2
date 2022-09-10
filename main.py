@@ -35,7 +35,9 @@ cursor = cnx.cursor(buffered=True)
 start = time.time()
 
 
-
+session = requests.Session()
+session.mount("https://", HTTPAdapter(max_retries=8))
+session.mount("http://", HTTPAdapter(max_retries=8))
 count = 0
 def status(str):
     print(str)
@@ -115,14 +117,12 @@ def getAllZurichRentProperties(proxy):
                     'https':proxy
                     }
         headers={'User-Agent': chrome_ua}
-        session = requests.Session()
-        session.mount("https://", HTTPAdapter(max_retries=8))
-        session.mount("http://", HTTPAdapter(max_retries=8))
+       
         session.proxies.update(proxies)
         session.headers.update(headers)
         while True:
             try:
-                response = session.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(x) + '&r=100')
+                response = session.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str() + '&r=100')
                 break
             except requests.exceptions.ProxyError:
                 print("Proxy Error Encountered: Reloading")
@@ -151,9 +151,6 @@ def getAllZurichBuyProperties(proxy):
                     'https':proxy
                     }
         headers={'User-Agent': chrome_ua}
-        session = requests.Session()
-        session.mount("https://", HTTPAdapter(max_retries=8))
-        session.mount("http://", HTTPAdapter(max_retries=8))
         session.proxies.update(proxies)
         session.headers.update(headers)
         while True:
@@ -194,9 +191,6 @@ def getData(section, state,props, proxy):
                     'https':proxy,
                     }
         headers={'User-Agent': chrome_ua}
-        session = requests.Session()
-        session.mount("https://", HTTPAdapter(max_retries=8))
-        session.mount("http://", HTTPAdapter(max_retries=8))
         session.proxies.update(proxies)
         session.headers.update(headers)
         while True:
