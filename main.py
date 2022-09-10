@@ -86,17 +86,18 @@ def getProxies():
     return proxies
 
 def extract(proxy):
-    if(len(good_proxies) < 20):
-        headers={'User-Agent': chrome_ua}
-        r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' :proxy,'https': proxy},timeout=2)
-        if(r.status_code == 200):
-            print(len(good_proxies), " ", proxy, " is working ", r.status_code)
-            with open("good2.txt", "a") as myfile:
-                myfile.write(proxy)
-                myfile.write('\n')
-                myfile.close()
-            good_proxies.append(proxy)
-        return proxy
+    global pcount
+    headers={'User-Agent': chrome_ua}
+    r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' :proxy,'https': proxy},timeout=2)
+    if(r.status_code == 200):
+        pcount = pcount + 1
+        print(pcount, " ", proxy, " is working ", r.status_code)
+        with open("good2.txt", "a") as myfile:
+            myfile.write(proxy)
+            myfile.write('\n')
+            myfile.close()
+        good_proxies.append(proxy)
+    return proxy
 
 
 
@@ -361,11 +362,10 @@ start = time.time()
 
 clear_txt()
 
-for x in range(2):
-    proxies_list()
-    proxylist = proxies_arr()
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.map(extract, proxylist)
+proxies_list()
+proxylist = proxies_arr()
+with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(extract, proxylist)
 proxies = [*set(good_proxies)]
 print(len(proxies), " are working well")
 
