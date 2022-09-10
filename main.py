@@ -181,11 +181,10 @@ def getTimeRange():
     return arr
 
 
-def getData(section, state, props, proxy):
+def getData(section, state,props, proxy):
     ids = props
     status("GETTING ALL DATA FOR ZURICH USING THEIR UNIQUE IDS....")
     for id in ids:
-        start = time.time()
         new_id = str(id)
         proxies = {
                     'http' :proxy,
@@ -207,9 +206,65 @@ def getData(section, state, props, proxy):
         soup = BeautifulSoup(response.text, "lxml")
         keys = list()
         vals = list()
+        try:
+            not_available = soup.find("h1", attrs={'class':'Box-cYFBPY GJQq'}).text
+            translated_label = GoogleTranslator(source='de', target='en').translate(text=not_available)
+            if(translated_label.strip() =='Object no longer available'):
+                print('object not available')
+                break
+        except AttributeError:
+            print('object found')
+            pass
+        if soup.find("article", attrs={'class':'Box-cYFBPY hKrxoH'}):
+            desc = soup.find("article", attrs={'class':'Box-cYFBPY hKrxoH'})
+            description = desc.find("h1").text
+            street = soup.find("p", attrs={'class':'Box-cYFBPY fJcIoQ'}).text
+            city = street.split()[-1:][0]
+            attris = soup.find('table',attrs = {'class':'DataTable__StyledTable-sc-1o2xig5-1 jbXaEC'})
+            attr_body = attris.find('tbody')
+            attrs = attr_body.find_all('tr')
+            for x in attrs:
+                tag = x.find('td').text
+                translated = GoogleTranslator(source='de', target='en').translate(text=tag)
+                keys.append(translated)
+                vals.append(x.find('td').find_next('td').text)
+            rentalpairs =  dict(zip(keys, vals))
+            community = ""
+            livingSpace = ""
+            floors = ""
+            availability = ""
+            try:
+                community += rentalpairs['Community']
+                livingSpace += rentalpairs['living space']
+                floors += rentalpairs['floor']
+                availability += rentalpairs['availability']         
+            except KeyError:
+                why = "some ppt not found"
+            price = soup.find("h2", attrs={'class':'Box-cYFBPY JEfxu'}).text
+            number = soup.find("div", attrs={'class':'Content-jrGTCV ekhUAM'})
+            nom2 = soup.find("a")['href']
+            vals = (new_id,)
+            cursor.execute('SELECT propertylink FROM properties WHERE propertylink = %s', vals)
+            cnx.commit()
+            newcount = cursor.rowcount
+            if(newcount == 0):
+                sql = 'INSERT INTO properties(section, state, street, city, community, floors, availability, livingSpace, description, phonenumber,price,propertylink) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                sql_vals =  (section, state, street,city, community, floors, availability, livingSpace, description, nom2, price,new_id)
+
+                cursor.execute(sql, sql_vals)
+                cnx.commit()
+                print("affected rows = " + str(cursor.rowcount))
+            else:
+                print("Already in Database")
+            break
         if(new_id.startswith('https')):
-            desc = soup.find("h1", attrs={'data-test':'headerNameItem'})
-            description = desc.find("div").text.strip()
+            try:
+                desc = soup.find("h1", attrs={'data-test':'headerNameItem'})
+                description = desc.find("div").text.strip()
+            except:
+                desc = soup.find("article", attrs={'class':'Box-cYFBPY hKrxoH'})
+                description = desc.find("h1").text
+                print(description)
             price = soup.find("div", attrs={'class':'b-complex-heading-info__title b-complex-heading-info__title--second'}).text.strip()
             street = soup.find("div", attrs={'data-test':'ComplexLocation'}).text.strip()
             city = street.split()[-1:][0]
@@ -312,13 +367,11 @@ for x in range(3):
     with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(extract, proxylist)
 proxies = [*set(good_proxies)]
-# proxy = random.choice(proxies)
-# print("chosen proxy ", proxy)
 print(len(proxies), " are working well")
 
 getData("Rent", "Zurich",getAllZurichRentProperties(random.choice(proxies)), random.choice(proxies))
 getData("Buy", "Zurich",getAllZurichBuyProperties(random.choice(proxies)), random.choice(proxies))
-    
+getData("Buy", "Zurich")
 cursor.close()
 
 end = time.time()
