@@ -122,7 +122,7 @@ def getAllZurichRentProperties(proxy):
         session.headers.update(headers)
         while True:
             try:
-                response = session.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str() + '&r=100')
+                response = session.get('https://www.immoscout24.ch/de/immobilien/mieten/ort-zuerich?pn=' + str(x) + '&r=100')
                 break
             except requests.exceptions.ProxyError:
                 print("Proxy Error Encountered: Reloading")
