@@ -361,7 +361,7 @@ print(getTimeRange())
 start = time.time()
 
 clear_txt()
-for x in range(3):
+for x in range(2):
     proxies_list()
     proxylist = proxies_arr()
     with concurrent.futures.ThreadPoolExecutor() as executor:
