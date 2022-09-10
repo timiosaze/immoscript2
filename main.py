@@ -30,7 +30,7 @@ ua = UserAgent()
 chrome_ua = ua.chrome
 
 # MYSQL CONNECTION PARAMS
-cnx = mysql.connector.connect(host='localhost', user='python', password='password',database='immoscoutdb')
+cnx = mysql.connector.connect(host='localhost', user='root', password='password',database='immoscoutdb')
 cursor = cnx.cursor(buffered=True)
 start = time.time()
 
@@ -182,9 +182,9 @@ def getTimeRange():
 
 
 def getData(section, state,props, proxy):
-    ids = props
+    eds = props
     status("GETTING ALL DATA FOR ZURICH USING THEIR UNIQUE IDS....")
-    for id in ids:
+    for id in eds:
         new_id = str(id)
         proxies = {
                     'http' :proxy,
@@ -211,9 +211,8 @@ def getData(section, state,props, proxy):
             translated_label = GoogleTranslator(source='de', target='en').translate(text=not_available)
             if(translated_label.strip() =='Object no longer available'):
                 print('object not available')
-                break
+                continue
         except AttributeError:
-            print('object found')
             pass
         if soup.find("article", attrs={'class':'Box-cYFBPY hKrxoH'}):
             desc = soup.find("article", attrs={'class':'Box-cYFBPY hKrxoH'})
@@ -256,7 +255,7 @@ def getData(section, state,props, proxy):
                 print("affected rows = " + str(cursor.rowcount))
             else:
                 print("Already in Database")
-            break
+            continue
         if(new_id.startswith('https')):
             try:
                 desc = soup.find("h1", attrs={'data-test':'headerNameItem'})
@@ -371,7 +370,7 @@ print(len(proxies), " are working well")
 
 getData("Rent", "Zurich",getAllZurichRentProperties(random.choice(proxies)), random.choice(proxies))
 getData("Buy", "Zurich",getAllZurichBuyProperties(random.choice(proxies)), random.choice(proxies))
-getData("Buy", "Zurich")
+
 cursor.close()
 
 end = time.time()
