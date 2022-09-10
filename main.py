@@ -88,15 +88,18 @@ def extract(proxy):
    
    
     headers={'User-Agent': chrome_ua}
-   
+    count = 0
     r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' :proxy,'https': proxy},timeout=2)
-    if(r.status_code == 200):
-        print(proxy, " is working ", r.status_code)
+    if(r.status_code == 200 & count < 12):
+        count = count + 1
+        print(count, " ", proxy, " is working ", r.status_code)
         with open("good2.txt", "a") as myfile:
             myfile.write(proxy)
             myfile.write('\n')
             myfile.close()
         good_proxies.append(proxy)
+    else:
+        r.close()
     return proxy
 
 
