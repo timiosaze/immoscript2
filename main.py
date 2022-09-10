@@ -46,6 +46,7 @@ def inc():
     global count 
     count += 1
 
+pcount = 0
 
 good_proxies = []
 
@@ -86,13 +87,12 @@ def getProxies():
 
 def extract(proxy):
    
-   
+    global pcount
     headers={'User-Agent': chrome_ua}
-    count = 0
     r = requests.get('https://www.immoscout24.ch/de/d/wohnung-kaufen-abtwil-ag/7217242', headers=headers, proxies={'http' :proxy,'https': proxy},timeout=2)
-    if(r.status_code == 200 and count < 12):
-        count = count + 1
-        print(count, " ", proxy, " is working ", r.status_code)
+    if(r.status_code == 200 and pcount < 12):
+        pcount = pcount + 1
+        print(pcount, " ", proxy, " is working ", r.status_code)
         with open("good2.txt", "a") as myfile:
             myfile.write(proxy)
             myfile.write('\n')
